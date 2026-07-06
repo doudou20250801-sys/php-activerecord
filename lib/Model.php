@@ -1673,9 +1673,11 @@ class Model
 			$options['conditions'] = static::pk_conditions($values);
 			$list = $table->find($options);
 		}
-		$results = count($list);
+		$results = count((array) $list);
 
-		if ($results != ($expected = count($values)))
+		$expected = is_array($values) ? count($values) : 1;
+
+		if ($results != $expected)
 		{
 			$class = get_called_class();
 			if (is_array($values))
@@ -1732,6 +1734,7 @@ class Model
 	{
 		if (is_hash($array))
 		{
+			if (!is_array($array)) return false;
 			$keys = array_keys($array);
 			$diff = array_diff($keys,self::$VALID_OPTIONS);
 
