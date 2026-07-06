@@ -302,7 +302,7 @@ abstract class AbstractRelationship implements InterfaceRelationship
 
 	protected function create_conditions_from_keys(Model $model, $condition_keys=array(), $value_keys=array())
 	{
-		$condition_string = implode('_and_', $condition_keys);
+		$condition_string = implode('_and_', (array) $condition_keys);
 		$condition_values = array_values($model->get_values_for($value_keys));
 
 		// return null if all the foreign key values are null so that we don't try to do a query like "id is null"
@@ -715,6 +715,9 @@ class BelongsTo extends AbstractRelationship
 
 		foreach ($this->foreign_key as $key)
 			$keys[] = $inflector->variablize($key);
+
+		if (!isset($this->primary_key))
+			$this->primary_key = array(Table::load($this->class_name)->pk[0]);
 
 		if (!($conditions = $this->create_conditions_from_keys($model, $this->primary_key, $keys)))
 			return null;
